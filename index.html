@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relatório Financeiro</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <h1>Relatório Financeiro</h1>
+      <p>Conferência — Receitas, Despesas e Saldo Líquido</p>
+    </div>
+    <div class="api-box">
+      <label for="apiUrl">Apps Script API</label>
+      <input id="apiUrl" type="url" placeholder="Cole aqui a URL .../exec" />
+      <button id="saveApiBtn" class="btn btn-primary">Guardar URL</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="toolbar">
+      <button id="refreshBtn" class="btn btn-primary">Actualizar dados</button>
+      <span id="statusText" class="status">Pronto.</span>
+    </section>
+
+    <section class="kpi-grid">
+      <article class="kpi">
+        <span class="kpi-label">Total de inscritos</span>
+        <strong id="kpiInscritos" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Receitas de inscrições</span>
+        <strong id="kpiInscricoes" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Receita de camisetas</span>
+        <strong id="kpiCamisetas" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Receita total</span>
+        <strong id="kpiTotal" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi kpi-warn">
+        <span class="kpi-label">Despesas totais</span>
+        <strong id="kpiDespesas" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi kpi-accent">
+        <span class="kpi-label">Saldo líquido</span>
+        <strong id="kpiSaldo" class="kpi-value">—</strong>
+      </article>
+    </section>
+
+    <section class="grid-2">
+      <section class="card">
+        <div class="card-head">
+          <h2>Nova despesa</h2>
+        </div>
+        <form id="despesaForm" class="form-grid">
+          <label>Data
+            <input name="data" type="text" placeholder="dd/mm/aaaa" required />
+          </label>
+          <label>Categoria
+            <input name="categoria" type="text" placeholder="Ex.: Transporte" required />
+          </label>
+          <label>Fornecedor
+            <input name="fornecedor" type="text" placeholder="Nome do fornecedor" />
+          </label>
+          <label>Quantidade
+            <input name="quantidade" type="text" placeholder="Ex.: 2 ou 10 un" />
+          </label>
+          <label class="full">Descrição
+            <input name="descricao" type="text" placeholder="Descrição da despesa" required />
+          </label>
+          <label>Valor total
+            <input name="valorTotal" type="number" step="0.01" min="0" placeholder="0.00" required />
+          </label>
+          <div class="full actions">
+            <button type="submit" class="btn btn-primary">Guardar despesa</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Novo ajuste de receita</h2>
+        </div>
+        <form id="ajusteForm" class="form-grid">
+          <label>Data
+            <input name="data" type="text" placeholder="dd/mm/aaaa" required />
+          </label>
+          <label>Nome
+            <input name="nome" type="text" placeholder="Nome da inscrita ou referência" />
+          </label>
+          <label>Tipo
+            <select name="tipo" required>
+              <option value="">Seleccione</option>
+              <option value="Inscrição">Inscrição</option>
+              <option value="Camiseta">Camiseta</option>
+            </select>
+          </label>
+          <label>Operação
+            <select name="operacao" required>
+              <option value="">Seleccione</option>
+              <option value="Adicionar">Adicionar</option>
+              <option value="Subtrair">Subtrair</option>
+            </select>
+          </label>
+          <label class="full">Referência
+            <input name="referencia" type="text" placeholder="Correcção manual, lançamento extra, etc." />
+          </label>
+          <label class="full">Descrição
+            <input name="descricao" type="text" placeholder="Motivo do ajuste" required />
+          </label>
+          <label>Valor
+            <input name="valor" type="number" step="0.01" min="0" placeholder="0.00" required />
+          </label>
+          <label class="full">Observações
+            <input name="observacoes" type="text" placeholder="Observações adicionais" />
+          </label>
+          <div class="full actions">
+            <button type="submit" class="btn btn-primary">Guardar ajuste</button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section class="grid-2">
+      <section class="card">
+        <div class="card-head">
+          <h2>Despesas</h2>
+          <button id="reloadDespesasBtn" class="btn">Recarregar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Categoria</th>
+                <th>Fornecedor</th>
+                <th>Descrição</th>
+                <th>Quantidade</th>
+                <th class="num">Valor total</th>
+                <th>Acção</th>
+              </tr>
+            </thead>
+            <tbody id="despesasBody">
+              <tr><td colspan="7" class="empty">Sem dados.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Ajustes de receita</h2>
+          <button id="reloadAjustesBtn" class="btn">Recarregar</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Tipo</th>
+                <th>Operação</th>
+                <th>Descrição</th>
+                <th class="num">Valor</th>
+                <th>Acção</th>
+              </tr>
+            </thead>
+            <tbody id="ajustesBody">
+              <tr><td colspan="7" class="empty">Sem dados.</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+    <!-- Receitas base (Consolidado) — no fim -->
+    <section class="card" id="seccaoCorrecaoReceita" style="display:none;margin-bottom:18px">
+      <div class="card-head">
+        <h2>Corrigir receita de inscrição/camiseta</h2>
+        <button type="button" class="btn" onclick="fecharCorrecaoReceita()">Fechar</button>
+      </div>
+      <form id="correcaoReceitaForm" class="form-grid">
+        <input type="hidden" name="rowNumber" />
+        <label>Nome<input name="nome" type="text" readonly style="background:#f3f6fa" /></label>
+        <label>Valor inscrição actual<input name="valorInscricaoActual" type="text" readonly style="background:#f3f6fa" /></label>
+        <label>Novo valor de inscrição (MT)<input name="novoValorInscricao" type="number" step="0.01" min="0" placeholder="0.00" /></label>
+        <label>Valor camiseta actual<input name="valorCamisetaActual" type="text" readonly style="background:#f3f6fa" /></label>
+        <label>Novo valor de camiseta (MT)<input name="novoValorCamiseta" type="number" step="0.01" min="0" placeholder="0.00" /></label>
+        <div class="full actions">
+          <button type="submit" class="btn btn-primary">Guardar correcção</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card" style="margin-bottom:18px">
+      <div class="card-head">
+        <h2>Receitas base (Consolidado)</h2>
+        <button id="reloadConsolidadoBtn" class="btn">Recarregar</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Nome</th>
+              <th class="num">Inscrição (MT)</th>
+              <th class="num">Camiseta (MT)</th>
+              <th>Acção</th>
+            </tr>
+          </thead>
+          <tbody id="consolidadoBody">
+            <tr><td colspan="4" class="empty">Sem dados.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Dialog: editar despesa -->
+  <dialog id="editDespesaDialog" class="dialog">
+    <form id="editDespesaForm" class="dialog-form">
+      <div class="card-head">
+        <h2>Corrigir despesa</h2>
+      </div>
+      <input name="rowNumber" type="hidden" />
+      <div class="form-grid">
+        <label>Data
+          <input name="data" type="text" placeholder="dd/mm/aaaa" required />
+        </label>
+        <label>Categoria
+          <input name="categoria" type="text" required />
+        </label>
+        <label>Fornecedor
+          <input name="fornecedor" type="text" />
+        </label>
+        <label>Quantidade
+          <input name="quantidade" type="text" />
+        </label>
+        <label class="full">Descrição
+          <input name="descricao" type="text" required />
+        </label>
+        <label>Valor total
+          <input name="valorTotal" type="number" step="0.01" min="0" required />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="closeEditDespesaBtn" type="button" class="btn">Fechar</button>
+        <button type="button" class="btn btn-danger" onclick="confirmarDeleteDespesa()">Eliminar</button>
+        <button type="submit" class="btn btn-primary">Guardar correcção</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Dialog: editar ajuste -->
+  <dialog id="editDialog" class="dialog">
+    <form id="editAjusteForm" class="dialog-form">
+      <div class="card-head">
+        <h2>Actualizar ajuste</h2>
+      </div>
+      <input name="id" type="hidden" />
+      <div class="form-grid">
+        <label>Data
+          <input name="data" type="text" placeholder="dd/mm/aaaa" required />
+        </label>
+        <label>Nome
+          <input name="nome" type="text" />
+        </label>
+        <label>Tipo
+          <select name="tipo" required>
+            <option value="Inscrição">Inscrição</option>
+            <option value="Camiseta">Camiseta</option>
+          </select>
+        </label>
+        <label>Operação
+          <select name="operacao" required>
+            <option value="Adicionar">Adicionar</option>
+            <option value="Subtrair">Subtrair</option>
+          </select>
+        </label>
+        <label class="full">Referência
+          <input name="referencia" type="text" />
+        </label>
+        <label class="full">Descrição
+          <input name="descricao" type="text" required />
+        </label>
+        <label>Valor
+          <input name="valor" type="number" step="0.01" min="0" required />
+        </label>
+        <label class="full">Observações
+          <input name="observacoes" type="text" />
+        </label>
+      </div>
+      <div class="actions">
+        <button id="closeDialogBtn" type="button" class="btn">Fechar</button>
+        <button type="submit" class="btn btn-primary">Actualizar ajuste</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
