@@ -1,6 +1,6 @@
 // ── URL da API ──
 // Antes de fazer deploy, substitua o valor abaixo pela URL do seu Apps Script.
-const API_URL = 'https://script.google.com/macros/s/SEU_ID_AQUI/exec';
+const API_URL = 'https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbzt1rab-mBQsht5qb9qLbWPdUZ-LEF20QYf_d0DgU2J1auDvOaJ-SoEqj8Hsyyo8oR9/exec';
 
 const $ = (id) => document.getElementById(id);
 
