@@ -65,7 +65,8 @@ function renderRelatorio() {
 
   $('relatorioEntradasBody').innerHTML = `
     <tr><td>Inscrições (${formatNumber(r.totalInscritos)} membros)</td><td class="num">${formatMoney(r.receitaInscricoes)}</td></tr>
-    <tr><td>Camisetas</td><td class="num">${formatMoney(r.receitaCamisetas)}</td></tr>`;
+    <tr><td>Camisetas</td><td class="num">${formatMoney(r.receitaCamisetas)}</td></tr>
+    ${r.receitaBaseKubaTafula ? `<tr><td>Kuba Tafula</td><td class="num">${formatMoney(r.receitaBaseKubaTafula)}</td></tr>` : ''}`;
   $('relatorioTotalEntradas').textContent = formatMoney(r.receitaTotal);
 
   $('relatorioSaidasBody').innerHTML = despesas.length
@@ -131,6 +132,7 @@ function exportarWord() {
     <tbody>
       <tr><td>Inscrições (${r.totalInscritos} membros)</td><td class="right">${fmt(r.receitaInscricoes)}</td></tr>
       <tr><td>Camisetas</td><td class="right">${fmt(r.receitaCamisetas)}</td></tr>
+      ${r.receitaBaseKubaTafula ? `<tr><td>Kuba Tafula</td><td class="right">${fmt(r.receitaBaseKubaTafula)}</td></tr>` : ''}
     </tbody>
     <tfoot><tr class="total"><td>TOTAL ENTRADAS</td><td class="right">${fmt(r.receitaTotal)}</td></tr></tfoot>
   </table>
