@@ -4,20 +4,102 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Relatório Financeiro</title>
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#163b63,#2a6db1);min-height:100vh;display:flex;align-items:center;justify-content:center}
-    .box{background:#fff;border-radius:20px;padding:48px 40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25)}
-    .icon{font-size:48px;margin-bottom:20px}
-    h1{font-size:22px;color:#163b63;margin-bottom:12px}
-    p{font-size:15px;color:#506073;line-height:1.6}
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="box">
-    <div class="icon">🔧</div>
-    <h1>Em manutenção</h1>
-    <p>O sistema encontra-se temporariamente indisponível para melhorias.<br><br>Voltamos em breve.</p>
-  </div>
+  <header class="topbar">
+    <div>
+      <h1>Relatório Financeiro</h1>
+      <p>Conferência — Receitas, Despesas e Saldo Líquido</p>
+    </div>
+    <div class="toolbar-right">
+      <button id="refreshBtn" class="btn btn-light">Actualizar dados</button>
+      <span id="statusText" class="status-top">Pronto.</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="kpi-grid">
+      <article class="kpi">
+        <span class="kpi-label">Total de inscritos</span>
+        <strong id="kpiInscritos" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Receitas de inscrições</span>
+        <strong id="kpiInscricoes" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Receita de camisetas</span>
+        <strong id="kpiCamisetas" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi">
+        <span class="kpi-label">Receita total</span>
+        <strong id="kpiTotal" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi kpi-warn">
+        <span class="kpi-label">Despesas totais</span>
+        <strong id="kpiDespesas" class="kpi-value">—</strong>
+      </article>
+      <article class="kpi kpi-accent">
+        <span class="kpi-label">Saldo líquido</span>
+        <strong id="kpiSaldo" class="kpi-value">—</strong>
+      </article>
+    </section>
+
+    <section class="card" id="cardRelatorio">
+      <div class="card-head">
+        <h2>Relatório Consolidado</h2>
+        <button class="btn btn-primary" onclick="exportarWord()">⬇ Word (.doc)</button>
+      </div>
+      <div id="relatorio" class="relatorio-wrap">
+        <div class="relatorio-grid">
+          <div class="relatorio-bloco relatorio-entradas">
+            <h3 class="relatorio-titulo relatorio-titulo-entrada">ENTRADAS</h3>
+            <div class="relatorio-bloco-scroll">
+            <table class="relatorio-table">
+              <thead>
+                <tr><th>Descrição</th><th class="num">Valor (MT)</th></tr>
+              </thead>
+              <tbody id="relatorioEntradasBody">
+                <tr><td colspan="2" class="empty">Sem dados.</td></tr>
+              </tbody>
+              <tfoot>
+                <tr class="relatorio-total">
+                  <td><strong>Total Entradas</strong></td>
+                  <td class="num"><strong id="relatorioTotalEntradas">—</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            </div>
+          </div>
+          <div class="relatorio-bloco relatorio-saidas relatorio-bloco-saidas">
+            <h3 class="relatorio-titulo relatorio-titulo-saida">SAÍDAS</h3>
+            <div class="relatorio-bloco-scroll">
+            <table class="relatorio-table">
+              <thead>
+                <tr><th>Data</th><th>Categoria</th><th>Beneficiários</th><th>Descrição</th><th>Taxa de Transf.</th><th class="num">Valor (MT)</th></tr>
+              </thead>
+              <tbody id="relatorioSaidasBody">
+                <tr><td colspan="6" class="empty">Sem dados.</td></tr>
+              </tbody>
+              <tfoot>
+                <tr class="relatorio-total">
+                  <td colspan="5"><strong>Total Saídas</strong></td>
+                  <td class="num"><strong id="relatorioTotalSaidas">—</strong></td>
+                </tr>
+              </tfoot>
+            </table>
+            </div>
+          </div>
+        </div>
+        <div class="relatorio-saldo">
+          <span>Saldo Líquido</span>
+          <strong id="relatorioSaldoFinal">—</strong>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
 </body>
 </html>
