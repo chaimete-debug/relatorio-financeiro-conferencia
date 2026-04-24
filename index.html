@@ -49,7 +49,10 @@
     <section class="card" id="cardRelatorio">
       <div class="card-head">
         <h2>Relatório Consolidado</h2>
-        <button class="btn btn-primary" onclick="exportarWord()">⬇ Word (.doc)</button>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="exportarWord()">⬇ Word (.doc)</button>
+          <button class="btn btn-primary" onclick="exportarPDF()">⬇ PDF</button>
+        </div>
       </div>
       <div id="relatorio" class="relatorio-wrap">
         <div class="relatorio-grid">
